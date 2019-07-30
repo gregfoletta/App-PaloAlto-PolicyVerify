@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use 5.010;
 
-package App::PaloAlto::LogTest;
+package App::PaloAlto::PolicyVerify;
 
 
 # PODNAME
@@ -16,11 +16,11 @@ use Text::CSV;
 
 =head1 SYNOPSIS
 
-This is the supporting module for the L<pa_ruleset_verify> application.
+This is the supporting module for the L<pa_policy_verify> application.
 
 =head1 DESCRIPTION
 
-This module contains the methods used by the L<pa_ruleset_verify> application.
+This module contains the methods used by the L<pa_policy_verify> application.
 It takes in information allowing it to connect to a Palo Alto firewall, and a logfile containing
 flows - source/destination IP & ports, and a protocol.
 
@@ -44,7 +44,7 @@ qualification of the migrated rulebase prior to the cutover of production flows.
 
 =head2 new
 
-    my $fw_tester = Device::Firewall::PaloAlto::LogTest->new(
+    my $fw_tester = App::PaloAlto::PolicyVerify->new(
         uri => 'https://pa.localdomain',
         username => 'admin',
         password => 'redacted',
@@ -56,7 +56,7 @@ qualification of the migrated rulebase prior to the cutover of production flows.
         fields => '0,1,2,3,4'
     );
 
-Contructs the object. Each argument maps to a command line switch in L<pa_ruleset_verify>. Please refer to its
+Contructs the object. Each argument maps to a command line switch in L<pa_policy_verify>. Please refer to its
 documentation for information and default values.
 
 The only argument without a default is C<logfile>.
@@ -90,7 +90,7 @@ sub new {
     $obj{fw} = Device::Firewall::PaloAlto->new(%pa_args)->auth() or die $obj{fw}->error;
 
     # Set up the CSV object
-    $obj{csv} = Text::CSV->new ({ binary => 1, sep_char => $arguments{sep} }) or die Text::CSV->error_diag();
+    $obj{csv} = Text::CSV->new ({ binary => 1, sep_char => $arguments{sepchar} }) or die Text::CSV->error_diag();
 
     # Open the logfile;
     open($obj{fh}, '<:encoding(utf8)', $arguments{logfile}) or die "Could not open file '$arguments{logfile}'";
@@ -264,14 +264,22 @@ sub ip_to_zone {
             virtual_router => $self->{vr}
         );
     }
-    warn "No valid route for $ip" and return unless $fib_entry;
+    warn "No valid route for IP '$ip', skipping..." and return unless $fib_entry;
 
+
+    # FIXME: we're diving straight into the Device::Firewall::PaloAlto::Test::FIB's
+    # internal structure. Once its interface is better defined we'll go through that.
+    my $fib_interface = $fib_entry->{entries}[0]{interface};
 
     # Find the zone for the egress interface
     $interfaces //= $self->{fw}->op->interfaces;
     warn $interfaces->error and return unless $interfaces;
-    my $zone = $interfaces->interface($fib_entry->{entries}[0]{interface})->zone;
-    warn "No zone for $fib_entry->{interface}" and return unless $zone;
+
+    my $interface = $interfaces->interface($fib_interface);
+    warn $interface->error unless $interface;
+
+    my $zone = $interface->zone;
+    warn "Interface '$fib_interface' does not appear to be in a zone, skipping..." and return unless $zone;
 
     return $zone;
 }

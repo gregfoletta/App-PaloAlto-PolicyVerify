@@ -5,10 +5,10 @@ use warnings;
 use 5.010;
 use Pod::Usage;
 use Getopt::Long;
-use App::PaloAlto::LogTest;
+use App::PaloAlto::PolicyVerify;
 
 
-# PODNAME: pa_ruleset_verify
+# PODNAME: pa_policy_verify
 
 my %args;
 GetOptions(
@@ -20,7 +20,7 @@ GetOptions(
     'vsys=i',
     'insecure',
     'logfile=s',
-    'sep=s',
+    'sepchar=s',
     'fields=s',
     'help' => sub { pod2usage(1) }
 ) or pod2usage(2);
@@ -28,17 +28,17 @@ GetOptions(
 # --logfile is the only mandatory field.
 die "No --logfile specified" unless $args{logfile};
 
-my $app = App::PaloAlto::LogTest->new(%args);
+my $app = App::PaloAlto::PolicyVerify->new(%args);
 $app->run();
 
 
 =head1 NAME
 
-pa_ruleset_verify - verify a Palo Alto firewall ruleset using logs.
+pa_policy_verify - verify a Palo Alto firewall ruleset using logs.
 
 =head1 SYNOPSIS
 
-Usage: pa_ruleset_verify [options]
+Usage: pa_policy_verify [options]
 
 
 =head2 Palo Alto arguments
@@ -66,7 +66,7 @@ Usage: pa_ruleset_verify [options]
 
 =head1 DESCRIPTION
 
-B<pa_ruleset_verify> will do something.
+B<pa_policy_verify> will do something.
 
 =head1 OPTIONS
 
@@ -110,7 +110,7 @@ The columns of the logfile where the pertinent fields are, indexed at 0. The per
 
 As an example, if the source IP, destination IP, source port and destination port are at columns 3, 4, 5, 6, but the protocol is at column 11, you would use the following command line:
 
-    pa_ruleset_verify --fields 3,4,5,6,11
+    pa_policy_verify --fields 3,4,5,6,11
 
 If not specified, '0,1,2,3,4' is used.
 

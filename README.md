@@ -1,6 +1,6 @@
 # NAME
 
-App::PaloAlto::LogTest - Test firewall rules using log files.
+App::PaloAlto::PolicyVerify - Test firewall rules using log files.
 
 # VERSION
 
@@ -8,11 +8,11 @@ version 0.0.1
 
 # SYNOPSIS
 
-This is the supporting module for the [pa\_ruleset\_verify](https://metacpan.org/pod/pa_ruleset_verify) application.
+This is the supporting module for the [pa\_policy\_verify](https://metacpan.org/pod/pa_policy_verify) application.
 
 # DESCRIPTION
 
-This module contains the methods used by the [pa\_ruleset\_verify](https://metacpan.org/pod/pa_ruleset_verify) application.
+This module contains the methods used by the [pa\_policy\_verify](https://metacpan.org/pod/pa_policy_verify) application.
 It takes in information allowing it to connect to a Palo Alto firewall, and a logfile containing
 flows - source/destination IP & ports, and a protocol.
 
@@ -30,7 +30,7 @@ qualification of the migrated rulebase prior to the cutover of production flows.
 
 ## new
 
-    my $fw_tester = Device::Firewall::PaloAlto::LogTest->new(
+    my $fw_tester = App::PaloAlto::PolicyVerify->new(
         uri => 'https://pa.localdomain',
         username => 'admin',
         password => 'redacted',
@@ -42,7 +42,7 @@ qualification of the migrated rulebase prior to the cutover of production flows.
         fields => '0,1,2,3,4'
     );
 
-Contructs the object. Each argument maps to a command line switch in [pa\_ruleset\_verify](https://metacpan.org/pod/pa_ruleset_verify). Please refer to its
+Contructs the object. Each argument maps to a command line switch in [pa\_policy\_verify](https://metacpan.org/pod/pa_policy_verify). Please refer to its
 documentation for information and default values.
 
 The only argument without a default is `logfile`.
