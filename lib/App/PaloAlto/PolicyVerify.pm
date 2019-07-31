@@ -271,7 +271,7 @@ sub ip_to_zone {
     # internal structure. Once its interface is better defined we'll go through that.
     my $fib_interface = $fib_entry->{entries}[0]{interface};
 
-    # Find the zone for the egress interface
+    # Find the zone the interface is tethered in
     $interfaces //= $self->{fw}->op->interfaces;
     warn $interfaces->error and return unless $interfaces;
 
