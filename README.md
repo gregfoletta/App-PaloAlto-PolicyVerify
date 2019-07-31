@@ -4,7 +4,7 @@ App::PaloAlto::PolicyVerify - Test firewall rules using log files.
 
 # VERSION
 
-version 0.0.1
+version 0.0.2
 
 # SYNOPSIS
 
